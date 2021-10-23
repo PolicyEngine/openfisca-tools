@@ -1,3 +1,3 @@
-# policyengine-core
+# openfisca-tools
 
-This repository contains the core infrastructure for PolicyEngine sites in order to reduce code duplication. Namely, `policyengine`, a Python package which contains the server-side implementations, and `policyengine-core`, a React library containing high-level components to build the client-side interface.
+This package contains tools used by OpenFisca country packages (primarily -UK and -US), aiding with microsimulation handling, parameter tests and hypothetical situation input.
