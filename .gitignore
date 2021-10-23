@@ -1,0 +1,11 @@
+# dependencies
+**/node_modules
+**/package-lock.json
+**/build
+**/*.log*
+**/dist
+**/pytest_cache
+**/__pycache__
+**/*.egg-info
+**/.vscode
+client/policyengine-core/example/
