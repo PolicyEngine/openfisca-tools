@@ -42,8 +42,8 @@ jobs:
           python-version: 3.7
       - name: Install dependencies
         run: make install
-      - name: Build server package
-        run: make build-server
+      - name: Build package
+        run: make
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
