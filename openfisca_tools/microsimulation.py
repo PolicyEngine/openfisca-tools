@@ -2,9 +2,7 @@
 Microsimulation interfaces and utility functions.
 """
 from typing import List, Tuple
-import warnings
 from openfisca_core.entities.entity import Entity
-from policyengine.api.general import ReformType
 from microdf.generic import MicroDataFrame
 import numpy as np
 from openfisca_core.entities import GroupEntity
@@ -13,7 +11,7 @@ from openfisca_core.simulation_builder import SimulationBuilder
 from microdf import MicroSeries
 from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 
-from policyengine.api.model_api import carried_over
+from openfisca_tools.model_api import carried_over, ReformType
 
 
 class Microsimulation:
