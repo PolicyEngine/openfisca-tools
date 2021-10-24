@@ -251,7 +251,7 @@ class Microsimulation:
         var_metadata = self.simulation.tax_benefit_system.variables[
             variables[0]
         ]
-        entity = var_metadata.entity.key or map_to
+        entity = map_to or var_metadata.entity.key
         weights = self.calc(f"{entity}_weight", period=period, weighted=False)
         for var in variables:
             df_dict[var] = self.calc(
