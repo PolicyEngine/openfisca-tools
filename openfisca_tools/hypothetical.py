@@ -44,9 +44,11 @@ class IndividualSim:
             )
 
     def build(self):
-        self.sim = self.sim_builder.build_from_entities(
+        self.simulation = self.sim_builder.build_from_entities(
             self.system, self.situation_data
         )
+        self.simulation.trace = True
+        self.sim = self.simulation
 
     def apply_reform(self, reform: ReformType) -> None:
         """Recursively applies a reform to the tax-benefit system.
@@ -155,7 +157,7 @@ class IndividualSim:
         Returns:
             np.array: The resulting values.
         """
-        if not hasattr(self, "sim"):
+        if not hasattr(self, "simulation"):
             self.build()
         period = period or self.year
         entity = self.system.variables[var].entity
@@ -164,12 +166,12 @@ class IndividualSim:
             if target_entity.key != entity.key:
                 target = self.get_group(entity, target)
         try:
-            result = self.sim.calculate(var, period)
+            result = self.simulation.calculate(var, period)
         except:
             try:
                 result = self.sim.calculate_add(var, period)
             except:
-                result = self.sim.calculate_divide(var, period)
+                result = self.simulation.calculate_divide(var, period)
         if self.varying:
             result = result.reshape(
                 (self.num_points, len(self.situation_data[entity.plural]))
