@@ -70,9 +70,9 @@ def generate_tests(sim: Microsimulation) -> Callable:
             ).sum()
             revenue = baseline_net_income - reformed_net_income
             if "min" in test["revenue"]:
-                assert revenue >= test["revenue"]["min"]
+                assert revenue >= test["revenue"]["min"], f"Revenue estimate too low - {revenue}"
             if "max" in test["revenue"]:
-                assert revenue <= test["revenue"]["max"]
+                assert revenue <= test["revenue"]["max"], f"Revenue estimate too high - {revenue}"
             if "positive" in test["revenue"]:
                 assert revenue > 0
             if "negative" in test["revenue"]:
