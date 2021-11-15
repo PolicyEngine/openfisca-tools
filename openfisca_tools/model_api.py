@@ -128,7 +128,7 @@ def is_in(values, *targets):
     return sum(map(lambda target: values == target, targets))
 
 
-def uprated(by: str = None) -> Callable:
+def uprated(by: str = None, start_year: int = 2015) -> Callable:
     """Attaches a formula applying an uprating factor to input variables (going back as far as 2015).
 
     Args:
@@ -139,10 +139,10 @@ def uprated(by: str = None) -> Callable:
     """
 
     def uprater(variable: type) -> type:
-        if hasattr(variable, "formula_2015"):
+        if hasattr(variable, f"formula_{start_year}"):
             return variable
 
-        def formula_2015(entity, period, parameters):
+        def formula_start_year(entity, period, parameters):
             if by is None:
                 return entity(variable.__name__, period.last_year)
             else:
@@ -150,9 +150,11 @@ def uprated(by: str = None) -> Callable:
                     parameters(period).uprating[by]
                     / parameters(period.last_year).uprating[by]
                 )
-                return uprating * entity(variable.__name__, period.last_year)
+                old = entity(variable.__name__, period.last_year)
+                return uprating * old
 
-        variable.formula_2015 = formula_2015
+        formula_start_year.__name__ = f"formula_{start_year}"
+        setattr(variable, formula_start_year.__name__, formula_start_year)
         return variable
 
     return uprater
