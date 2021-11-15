@@ -45,6 +45,37 @@ def abolish(variable: str) -> Reform:
     )
 
 
+def get_parameter(root: ParameterNode, parameter: str) -> Parameter:
+    """Gets a parameter from the tree.
+
+    Args:
+        root (ParameterNode): The root of the parameter tree.
+        parameter (str): The name of the parameter to get.
+
+    Returns:
+        Parameter: The parameter.
+    """
+    node = root
+    for name in parameter.split("."):
+        try:
+            if "[" not in name:
+                node = node.children[name]
+            else:
+                try:
+                    name, index = name.split("[")
+                    index = int(index[:-1])
+                    node = node.children[name].brackets[index]
+                except:
+                    raise ValueError(
+                        "Invalid bracket syntax (should be e.g. tax.brackets[3].rate"
+                    )
+        except:
+            raise ValueError(
+                f"Could not find the parameter (failed at {name})."
+            )
+    return node
+
+
 def set_parameter(
     parameter: str, value: float, period: str = "year:2015:10"
 ) -> Reform:
@@ -60,24 +91,7 @@ def set_parameter(
     """
 
     def modifier_fn(parameters: ParameterNode):
-        node = parameters
-        for name in parameter.split("."):
-            try:
-                if "[" not in name:
-                    node = node.children[name]
-                else:
-                    try:
-                        name, index = name.split("[")
-                        index = int(index[:-1])
-                        node = node.children[name].brackets[index]
-                    except:
-                        raise ValueError(
-                            "Invalid bracket syntax (should be e.g. tax.brackets[3].rate"
-                        )
-            except:
-                raise ValueError(
-                    f"Could not find the parameter (failed at {name})."
-                )
+        node = get_parameter(parameters, parameter)
         node.update(period=period, value=value)
         return parameters
 
