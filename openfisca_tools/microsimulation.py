@@ -84,6 +84,8 @@ class Microsimulation:
             year (int): The year of the data to load.
         """
         self.system = self.tax_benefit_system()
+        if year not in dataset.years:
+            dataset.generate(year)
         data = dataset.load(year)
 
         class carry_over_by_default(Reform):
