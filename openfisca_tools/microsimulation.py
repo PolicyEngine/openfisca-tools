@@ -98,9 +98,9 @@ class Microsimulation:
         self.apply_reform(
             (
                 self.pre_reform,
+                carry_over_by_default,
                 self.reform,
                 self.post_reform,
-                carry_over_by_default,
             )
         )
         builder = SimulationBuilder()
