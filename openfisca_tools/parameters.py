@@ -1,7 +1,7 @@
 from openfisca_core.parameters import ParameterNode, Parameter
 from openfisca_core.parameters.parameter_at_instant import ParameterAtInstant
 from openfisca_core.periods import instant
-
+from numpy import ceil, floor
 from openfisca_tools.reforms import get_parameter
 
 
@@ -96,6 +96,24 @@ def uprate_parameters(root: ParameterNode) -> ParameterNode:
                             * uprater_at_entry
                             / uprater_at_start
                         )
+                        if "rounding" in parameter.metadata["uprating"]:
+                            rounding_config = parameter.metadata["uprating"][
+                                "rounding"
+                            ]
+                            if isinstance(rounding_config, float):
+                                interval = rounding_config
+                                rounding_fn = round
+                            elif isinstance(rounding_config, dict):
+                                interval = rounding_config["interval"]
+                                rounding_fn = dict(
+                                    nearest=round,
+                                    upwards=ceil,
+                                    downwards=floor,
+                                )[rounding_config["type"]]
+                            uprated_value = (
+                                rounding_fn(uprated_value / interval)
+                                * interval
+                            )
                         parameter.values_list.append(
                             ParameterAtInstant(
                                 parameter.name,
