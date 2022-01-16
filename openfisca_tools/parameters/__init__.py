@@ -1,0 +1,2 @@
+from openfisca_tools.parameters.interpolation import interpolate_parameters
+from openfisca_tools.parameters.uprating import uprate_parameters
