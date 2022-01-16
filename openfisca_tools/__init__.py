@@ -8,3 +8,8 @@ from openfisca_tools.reforms import (
     abolish,
     set_parameter,
 )
+from openfisca_tools.parameters import (
+    interpolate_parameters,
+    uprate_parameters,
+    homogenize_parameter_structures,
+)
