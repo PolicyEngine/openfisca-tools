@@ -47,27 +47,40 @@ def homogenize_parameter_node(
         return node
     first_breakdown = breakdown[0]
     possible_values = list(
-        map(lambda enum: enum.name, variables[first_breakdown].possible_values)
+        map(
+            lambda enum: enum.value, variables[first_breakdown].possible_values
+        )
     )
-    if isinstance(node, Parameter):
-        node = ParameterNode(node.name, data={
-            child: {"2000-01-01": default_value} for child in possible_values
-        })
+    if not hasattr(node, "children"):
+        node = ParameterNode(
+            node.name,
+            data={
+                child: {"2000-01-01": default_value}
+                for child in possible_values
+            },
+        )
     missing_values = set(possible_values) - set(node.children)
     further_breakdown = len(breakdown) > 1
     for value in missing_values:
-        node.add_child(
-            value,
-            Parameter(value, {"2000-01-01": default_value}),
-        )
-    for child in node.children:
-        print(f"Recursing into {child}, further breakdown: {further_breakdown}")
-        if child not in possible_values:
-            logging.warn(
-                f"Parameter {node.name} has a child {child} that is not in the possible values of {first_breakdown}, ignoring."
+        if str(value) not in node.children:
+            # Integers behave strangely, this fixes it.
+            node.add_child(
+                str(value),
+                Parameter(value, {"2000-01-01": default_value}),
             )
+    for child in node.children:
+        if child not in possible_values:
+            try:
+                int(child)
+                is_int = True
+            except:
+                is_int = False
+            if not is_int or str(child) not in node.children:
+                logging.warn(
+                    f"Parameter {node.name} has a child {child} that is not in the possible values of {first_breakdown}, ignoring."
+                )
         if further_breakdown:
-            node = homogenize_parameter_node(
+            node.children[child] = homogenize_parameter_node(
                 node.children[child], breakdown[1:], variables, default_value
             )
     return node

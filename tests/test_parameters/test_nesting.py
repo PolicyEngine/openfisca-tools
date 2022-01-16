@@ -1,18 +1,21 @@
 def test_parameter_homogenization():
     from openfisca_core.parameters import ParameterNode
+    import numpy as np
 
     # Create the parameter
 
     root = ParameterNode(
         data={
             "value_by_country_and_region": {
-                "ENGLAND": {
-                    "NORTH_EAST": {
-                        "2021-01-01": 1,
+                "England": {
+                    "North East": {
+                        1: {
+                            "2021-01-01": 1,
+                        }
                     }
                 },
                 "metadata": {
-                    "breakdown": ["country", "region"],
+                    "breakdown": ["country", "region", "family_size"],
                 },
             }
         }
@@ -57,34 +60,36 @@ def test_parameter_homogenization():
         possible_values = Region
         default_value = Region.NORTH_EAST
 
+    class FamilySize(Enum):
+        ONE = 1
+        TWO = 2
+        THREE = 3
+
+    class family_size(Variable):
+        value_type = Enum
+        entity = Person
+        definition_period = ETERNITY
+        possible_values = FamilySize
+        default_value = FamilySize.ONE
+
     from openfisca_tools.parameters import homogenize_parameter_structures
     from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 
     system = TaxBenefitSystem([Person])
-    system.add_variables(country, region)
+    system.add_variables(country, region, family_size)
     system.parameters = root
 
-    homogenized = homogenize_parameter_structures(
+    system.parameters = homogenize_parameter_structures(
         system.parameters, system.variables, default_value=0
     )
 
-    print(system.parameters.value_by_country_and_region)
+    countries = np.array(["England", "England", "Scotland"])
+    regions = np.array(["North East", "London", "Scotland"])
+    family_sizes = np.array([1, 2, 3])
 
     assert (
-        system.parameters.value_by_country_and_region.ENGLAND.SOUTH_EAST(
-            "2021-01-01"
-        )
-        == 0
-    )
-    assert (
-        system.parameters.value_by_country_and_region.SCOTLAND.SCOTLAND(
-            "2021-01-01"
-        )
-        == 0
-    )
-    assert (
-        system.parameters.value_by_country_and_region.ENGLAND.NORTH_EAST(
-            "2021-01-01"
-        )
-        == 1
-    )
+        system.parameters("2021-01-01").value_by_country_and_region[countries][
+            regions
+        ][family_sizes]
+        == [1, 0, 0]
+    ).all()
