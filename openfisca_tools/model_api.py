@@ -13,13 +13,25 @@ import numpy as np
 
 ReformType = Union[Reform, Tuple[Reform]]
 
+allowed_variable_attributes = ("metadata", "quantity_type")
+
+STOCK = "Stock"
+FLOW = "Flow"
+
 
 class Variable(CoreVariable):
+    quantity_type: str = FLOW
+
     def __init__(self, baseline_variable=None):
         try:
             CoreVariable.__init__(self, baseline_variable=baseline_variable)
         except ValueError as e:
-            if "metadata" not in str(e):
+            if all(
+                [
+                    attribute not in str(e)
+                    for attribute in allowed_variable_attributes
+                ]
+            ):
                 raise e
 
         self.is_neutralized = False
