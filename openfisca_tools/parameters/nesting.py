@@ -1,5 +1,4 @@
-from openfisca_core.model_api import Enum
-from tkinter import Variable
+from openfisca_core.model_api import Enum, Variable
 from typing import Any, Dict, List, Type
 from openfisca_core.parameters import ParameterNode, Parameter
 import logging
