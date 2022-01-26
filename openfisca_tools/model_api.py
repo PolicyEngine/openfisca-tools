@@ -153,7 +153,7 @@ def uprated(by: str = None, start_year: int = 2015) -> Callable:
     def uprater(variable: Type[Variable]) -> type:
         if hasattr(variable, f"formula_{start_year}"):
             return variable
-        
+
         formula = variable.formula if hasattr(variable, "formula") else None
 
         def formula_start_year(entity, period, parameters):
