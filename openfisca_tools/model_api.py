@@ -8,7 +8,7 @@ from openfisca_core.model_api import (
     max_,
     min_,
 )
-from typing import Callable, Tuple, Union
+from typing import Callable, Tuple, Type, Union
 import numpy as np
 
 ReformType = Union[Reform, Tuple[Reform]]
@@ -150,9 +150,11 @@ def uprated(by: str = None, start_year: int = 2015) -> Callable:
         Callable: A class decorator.
     """
 
-    def uprater(variable: type) -> type:
+    def uprater(variable: Type[Variable]) -> type:
         if hasattr(variable, f"formula_{start_year}"):
             return variable
+        
+        formula = variable.formula if hasattr(variable, "formula") else None
 
         def formula_start_year(entity, period, parameters):
             if by is None:
@@ -163,6 +165,10 @@ def uprated(by: str = None, start_year: int = 2015) -> Callable:
                     / parameters(period.last_year).uprating[by]
                 )
                 old = entity(variable.__name__, period.last_year)
+                if (formula is not None) and (all(old) == 0):
+                    # If no values have been inputted, don't uprate and
+                    # instead use the previous formula on the current period.
+                    return formula(entity, period, parameters)
                 return uprating * old
 
         formula_start_year.__name__ = f"formula_{start_year}"
