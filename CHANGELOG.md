@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * `is_in` function takes list arguments and works correctly.
+* `select` is now an alias for `np.select`.
 
 ## [0.2.3] - 2022-01-26
 

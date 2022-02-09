@@ -101,18 +101,7 @@ def aggr_max(entity, period, variable_names, options=None):
         )
     )
 
-
-def select(conditions, choices):
-    """Selects the corresponding choice for the first matching condition in a list.
-
-    Args:
-        conditions (list): A list of boolean arrays
-        choices (list): A list of arrays
-
-    Returns:
-        Array: Array of values
-    """
-    return np.select(conditions, choices)
+select = np.select
 
 
 clip = np.clip
