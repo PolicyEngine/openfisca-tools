@@ -395,3 +395,5 @@ class Microsimulation:
                 target, wrt=wrt, delta=delta, percent=percent
             )
         return df
+
+GeneralMicrosimulation = Microsimulation
