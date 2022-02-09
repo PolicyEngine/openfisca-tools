@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * `GeneralMicrosimulation` alias for `Microsimulation`.
+* `between(values, lower, upper)` function for variable formulas.
 
 ### Fixed
 

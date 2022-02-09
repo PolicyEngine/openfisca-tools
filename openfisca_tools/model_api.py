@@ -137,8 +137,11 @@ def random(entity, reset=True):
     return x
 
 
-def is_in(values: ArrayLike, targets: list):
+def is_in(values: ArrayLike, targets: list) -> ArrayLike:
     return np.any([values == target for target in targets], axis=0)
+
+def between(values: ArrayLike, lower: float, upper: float) -> ArrayLike:
+    return (values >= lower) & (values <= upper)
 
 
 def uprated(by: str = None, start_year: int = 2015) -> Callable:
