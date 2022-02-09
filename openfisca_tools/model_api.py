@@ -10,6 +10,7 @@ from openfisca_core.model_api import (
 )
 from typing import Callable, Tuple, Type, Union
 import numpy as np
+from numpy.typing import ArrayLike
 
 ReformType = Union[Reform, Tuple[Reform]]
 
@@ -136,8 +137,8 @@ def random(entity, reset=True):
     return x
 
 
-def is_in(values, *targets):
-    return sum(map(lambda target: values == target, targets))
+def is_in(values: ArrayLike, targets: list):
+    return np.any([values == target for target in targets], axis=0)
 
 
 def uprated(by: str = None, start_year: int = 2015) -> Callable:
