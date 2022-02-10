@@ -11,11 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `GeneralMicrosimulation` alias for `Microsimulation`.
 * `between(values, lower, upper)` function for variable formulas.
+* `and_`, `or_` and `multiply_` functions for variable formulas.
+* `any_` and `any_of_variables` helper functions for variable formulas.
+
+### Changed
+
+* `is_in` and `amount_over` functions deprecated.
+* `select` is now an alias for `np.select`.
+* `is_in` will work for both `list` and `*args` inputs.
+* `household_net_income` used instead of `net_income` for parameter tests.
+
 
 ### Fixed
 
-* `is_in` function takes list arguments and works correctly.
-* `select` is now an alias for `np.select`.
+* Parameter nesting function bug fixes.
 
 ## [0.2.3] - 2022-01-26
 

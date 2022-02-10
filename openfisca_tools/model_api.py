@@ -175,6 +175,7 @@ def and_(
 
 or_ = add
 any_ = or_
+multiply = and_
 
 select = np.select
 
@@ -323,3 +324,5 @@ def sum_of_variables(variables: Union[List[str], str]) -> Callable:
         return add(entity, period, variable_names)
 
     return sum_of_variables
+
+any_of_variables = sum_of_variables
