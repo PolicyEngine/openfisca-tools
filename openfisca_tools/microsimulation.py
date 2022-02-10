@@ -396,4 +396,5 @@ class Microsimulation:
             )
         return df
 
+
 GeneralMicrosimulation = Microsimulation
