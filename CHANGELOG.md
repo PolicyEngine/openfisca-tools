@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2022-02-09
+
+### Added
+
+* `GeneralMicrosimulation` alias for `Microsimulation`.
+* `between(values, lower, upper)` function for variable formulas.
+* `and_`, `or_` and `multiply_` functions for variable formulas.
+* `any_` and `any_of_variables` helper functions for variable formulas.
+
+### Changed
+
+* `is_in` and `amount_over` functions deprecated.
+* `select` is now an alias for `np.select`.
+* `is_in` will work for both `list` and `*args` inputs.
+* `household_net_income` used instead of `net_income` for parameter tests.
+
+
+### Fixed
+
+* Parameter nesting function bug fixes.
+
 ## [0.2.3] - 2022-01-26
 
 ### Fixed

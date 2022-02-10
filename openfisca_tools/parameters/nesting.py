@@ -25,7 +25,7 @@ def get_breakdown_variables(node: ParameterNode) -> List[str]:
         if isinstance(breakdown, str):
             # Single element, cast to list.
             breakdown = [breakdown]
-        elif not isinstance(breakdown, list):
+        if not isinstance(breakdown, list):
             # Not a list, skip process and warn.
             logging.warn(
                 f"Invalid breakdown metadata for parameter {node.name}: {type(breakdown)}"
@@ -45,11 +45,22 @@ def homogenize_parameter_node(
     if breakdown is None:
         return node
     first_breakdown = breakdown[0]
-    possible_values = list(
-        map(
-            lambda enum: enum.value, variables[first_breakdown].possible_values
-        )
-    )
+    if isinstance(first_breakdown, list):
+        possible_values = first_breakdown
+    elif first_breakdown in variables:
+        dtype = variables[first_breakdown].value_type
+        if dtype == Enum:
+            possible_values = list(
+                map(
+                    lambda enum: enum.name,
+                    variables[first_breakdown].possible_values,
+                )
+            )
+        elif dtype == bool:
+            possible_values = [True, False]
+    else:
+        # Try to execute the breakdown as Python code
+        possible_values = list(eval(first_breakdown))
     if not hasattr(node, "children"):
         node = ParameterNode(
             node.name,

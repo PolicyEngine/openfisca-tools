@@ -63,10 +63,10 @@ def generate_tests(sim: Microsimulation) -> Callable:
             )
         if "revenue" in test:
             baseline_net_income = sim.calc(
-                "net_income", period=test["period"]
+                "household_net_income", period=test["period"]
             ).sum()
             reformed_net_income = reformed.calc(
-                "net_income", period=test["period"]
+                "household_net_income", period=test["period"]
             ).sum()
             revenue = baseline_net_income - reformed_net_income
             if "min" in test["revenue"]:
@@ -113,12 +113,8 @@ def generate_tests(sim: Microsimulation) -> Callable:
                 (sim.reform, reform), dataset=sim.dataset, year=sim.year
             )
             assert (
-                reformed.calc(
-                    "net_income", map_to="household", period=test["period"]
-                )
-                - sim.calc(
-                    "net_income", map_to="household", period=test["period"]
-                )
+                reformed.calc("household_net_income", period=test["period"])
+                - sim.calc("household_net_income", period=test["period"])
                 >= -1
             ).all()
         if "decreases_net_income" in test:
@@ -132,12 +128,8 @@ def generate_tests(sim: Microsimulation) -> Callable:
                 (sim.reform, reform), dataset=sim.dataset, year=sim.year
             )
             assert (
-                reformed.calc(
-                    "net_income", map_to="household", period=test["period"]
-                )
-                - sim.calc(
-                    "net_income", map_to="household", period=test["period"]
-                )
+                reformed.calc("household_net_income", period=test["period"])
+                - sim.calc("household_net_income", period=test["period"])
                 <= 1
             ).all()
 
