@@ -179,7 +179,6 @@ any_ = or_
 select = np.select
 
 
-
 clip = np.clip
 inf = np.inf
 
@@ -301,6 +300,7 @@ def uprated(by: str = None, start_year: int = 2015) -> Callable:
 def carried_over(variable: type) -> type:
     return uprated()(variable)
 
+
 def sum_of_variables(variables: List[str]) -> Callable:
     """Returns a function that sums the values of a list of variables.
 
@@ -310,6 +310,8 @@ def sum_of_variables(variables: List[str]) -> Callable:
     Returns:
         Callable: A function that sums the values of the variables.
     """
+
     def sum_of_variables(entity, period):
         return sum([entity(variable, period) for variable in variables])
+
     return sum_of_variables
