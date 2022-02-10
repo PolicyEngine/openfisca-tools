@@ -195,7 +195,9 @@ def amount_over(amount: ArrayLike, threshold: float) -> ArrayLike:
     Returns:
         ArrayLike: The amounts over the threshold.
     """
-    logging.warning("amount_over(x, y) is deprecated, use max_(x - y, 0) instead.")
+    logging.warning(
+        "amount_over(x, y) is deprecated, use max_(x - y, 0) instead."
+    )
     return max_(0, amount - threshold)
 
 
