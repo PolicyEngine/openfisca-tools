@@ -174,8 +174,10 @@ def and_(
 
 
 or_ = add
+any_ = or_
 
 select = np.select
+
 
 
 clip = np.clip
