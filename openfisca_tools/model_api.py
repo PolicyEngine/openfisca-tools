@@ -325,4 +325,5 @@ def sum_of_variables(variables: Union[List[str], str]) -> Callable:
 
     return sum_of_variables
 
+
 any_of_variables = sum_of_variables
