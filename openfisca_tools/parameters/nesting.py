@@ -45,11 +45,16 @@ def homogenize_parameter_node(
     if breakdown is None:
         return node
     first_breakdown = breakdown[0]
-    possible_values = list(
-        map(
-            lambda enum: enum.value, variables[first_breakdown].possible_values
+    if first_breakdown in variables:
+        possible_values = list(
+            map(
+                lambda enum: enum.name,
+                variables[first_breakdown].possible_values,
+            )
         )
-    )
+    else:
+        # Try to execute the breakdown as Python code
+        possible_values = list(eval(first_breakdown))
     if not hasattr(node, "children"):
         node = ParameterNode(
             node.name,

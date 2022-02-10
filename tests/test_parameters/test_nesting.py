@@ -7,15 +7,15 @@ def test_parameter_homogenization():
     root = ParameterNode(
         data={
             "value_by_country_and_region": {
-                "England": {
-                    "North East": {
+                "ENGLAND": {
+                    "NORTH_EAST": {
                         1: {
                             "2021-01-01": 1,
                         }
                     }
                 },
                 "metadata": {
-                    "breakdown": ["country", "region", "family_size"],
+                    "breakdown": ["country", "region", "range(1, 4)"],
                 },
             }
         }
@@ -60,17 +60,10 @@ def test_parameter_homogenization():
         possible_values = Region
         default_value = Region.NORTH_EAST
 
-    class FamilySize(Enum):
-        ONE = 1
-        TWO = 2
-        THREE = 3
-
     class family_size(Variable):
-        value_type = Enum
+        value_type = int
         entity = Person
         definition_period = ETERNITY
-        possible_values = FamilySize
-        default_value = FamilySize.ONE
 
     from openfisca_tools.parameters import homogenize_parameter_structures
     from openfisca_core.taxbenefitsystems import TaxBenefitSystem
@@ -83,8 +76,8 @@ def test_parameter_homogenization():
         system.parameters, system.variables, default_value=0
     )
 
-    countries = np.array(["England", "England", "Scotland"])
-    regions = np.array(["North East", "London", "Scotland"])
+    countries = np.array(["ENGLAND", "ENGLAND", "SCOTLAND"])
+    regions = np.array(["NORTH_EAST", "LONDON", "SCOTLAND"])
     family_sizes = np.array([1, 2, 3])
 
     assert (

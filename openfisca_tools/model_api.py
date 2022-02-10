@@ -77,7 +77,7 @@ def for_each_variable(
     if not entity.entity.is_person:
         group_agg_func = dict(
             add=entity.sum, all=entity.all, max=entity.max, min=entity.min
-        )
+        )[group_agg_func]
     for variable in variables:
         variable_entity = entity.entity.get_variable(variable).entity
         if variable_entity.key == entity.entity.key:
@@ -87,9 +87,9 @@ def for_each_variable(
                 values = group_agg_func(
                     entity.members(variable, period, options=options)
                 )
-            except:
+            except Exception as e:
                 raise ValueError(
-                    f"Variable {variable} is not defined for {entity.label} or {entity.label} members."
+                    f"Variable {variable} is not defined for {entity.entity.label} or {entity.entity.label} members: {e}"
                 )
         if result is None:
             result = values
@@ -196,7 +196,7 @@ def amount_over(amount: ArrayLike, threshold: float) -> ArrayLike:
     Returns:
         ArrayLike: The amounts over the threshold.
     """
-    logging.warning(
+    logging.debug(
         "amount_over(x, y) is deprecated, use max_(x - y, 0) instead."
     )
     return max_(0, amount - threshold)
