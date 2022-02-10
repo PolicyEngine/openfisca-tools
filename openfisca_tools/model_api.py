@@ -1,3 +1,4 @@
+import logging
 from openfisca_core.model_api import (
     DAY,
     MONTH,
@@ -174,7 +175,6 @@ def and_(
 
 or_ = add
 
-
 select = np.select
 
 
@@ -195,6 +195,7 @@ def amount_over(amount: ArrayLike, threshold: float) -> ArrayLike:
     Returns:
         ArrayLike: The amounts over the threshold.
     """
+    logging.warning("amount_over(x, y) is deprecated, use max_(x - y, 0) instead.")
     return max_(0, amount - threshold)
 
 
