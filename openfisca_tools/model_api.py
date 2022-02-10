@@ -301,17 +301,25 @@ def carried_over(variable: type) -> type:
     return uprated()(variable)
 
 
-def sum_of_variables(variables: List[str]) -> Callable:
+def sum_of_variables(variables: Union[List[str], str]) -> Callable:
     """Returns a function that sums the values of a list of variables.
 
     Args:
-        variables (List[str]): A list of variable names.
+        variables (Union[List[str], str]): A list of variable names.
 
     Returns:
         Callable: A function that sums the values of the variables.
     """
 
-    def sum_of_variables(entity, period):
-        return add(entity, period, [variables])
+    def sum_of_variables(entity, period, parameters):
+        if isinstance(variables, str):
+            # A string parameter name is passed
+            node = parameters(period)
+            for name in variables.split("."):
+                node = getattr(node, name)
+            variable_names = node
+        else:
+            variable_names = variables
+        return add(entity, period, variable_names)
 
     return sum_of_variables
