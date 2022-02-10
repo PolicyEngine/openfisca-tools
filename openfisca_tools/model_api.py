@@ -312,6 +312,6 @@ def sum_of_variables(variables: List[str]) -> Callable:
     """
 
     def sum_of_variables(entity, period):
-        return sum([entity(variable, period) for variable in variables])
+        return add(entity, period, [variables])
 
     return sum_of_variables
