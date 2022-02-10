@@ -45,7 +45,9 @@ def homogenize_parameter_node(
     if breakdown is None:
         return node
     first_breakdown = breakdown[0]
-    if first_breakdown in variables:
+    if isinstance(first_breakdown, list):
+        possible_values = first_breakdown
+    elif first_breakdown in variables:
         dtype = variables[first_breakdown].value_type
         if dtype == Enum:
             possible_values = list(
@@ -56,8 +58,6 @@ def homogenize_parameter_node(
             )
         elif dtype == bool:
             possible_values = [True, False]
-    elif isinstance(first_breakdown, list):
-        possible_values = first_breakdown
     else:
         # Try to execute the breakdown as Python code
         possible_values = list(eval(first_breakdown))
