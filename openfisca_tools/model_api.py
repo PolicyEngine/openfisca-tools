@@ -1,4 +1,5 @@
 import logging
+from turtle import pd
 from openfisca_core.model_api import (
     DAY,
     MONTH,
@@ -241,7 +242,7 @@ def is_in(values: ArrayLike, *targets: list) -> ArrayLike:
 
 
 def between(
-    values: ArrayLike, lower: float, upper: float, inclusive: bool = True
+    values: ArrayLike, lower: float, upper: float, inclusive: str = "both"
 ) -> ArrayLike:
     """Returns true if values are between lower and upper.
 
@@ -254,10 +255,7 @@ def between(
     Returns:
         ArrayLike: The resulting array.
     """
-    if inclusive:
-        return (values >= lower) & (values <= upper)
-    else:
-        return (values > lower) & (values < upper)
+    return pd.Series(values).between(lower, upper, inclusive=inclusive)
 
 
 def uprated(by: str = None, start_year: int = 2015) -> Callable:
