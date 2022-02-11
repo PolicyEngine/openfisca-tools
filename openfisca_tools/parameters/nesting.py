@@ -76,10 +76,12 @@ def homogenize_parameter_node(
             # Integers behave strangely, this fixes it.
             node.add_child(
                 str(value),
-                Parameter(value, {"2000-01-01": default_value}),
+                Parameter(
+                    node.name + "." + str(value), {"2000-01-01": default_value}
+                ),
             )
     for child in node.children:
-        if child not in possible_values:
+        if child.split(".")[-1] not in possible_values:
             try:
                 int(child)
                 is_int = True
