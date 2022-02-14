@@ -22,7 +22,12 @@ def uprate_parameters(root: ParameterNode) -> ParameterNode:
                     root, parameter.metadata["uprating"]["parameter"]
                 )
                 # Start from the latest value
-                last_instant = instant(parameter.values_list[0].instant_str)
+                if "start_instant" in parameter.metadata["uprating"]:
+                    last_instant = instant(parameter.metadata["start_instant"])
+                else:
+                    last_instant = instant(
+                        parameter.values_list[0].instant_str
+                    )
                 # For each defined instant in the uprating parameter
                 for entry in uprating_parameter.values_list[::-1]:
                     entry_instant = instant(entry.instant_str)
