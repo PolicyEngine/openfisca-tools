@@ -1,5 +1,5 @@
 import logging
-from turtle import pd
+from pandas import pd
 from openfisca_core.model_api import (
     DAY,
     MONTH,
