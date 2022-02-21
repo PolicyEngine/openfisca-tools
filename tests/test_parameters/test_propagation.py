@@ -17,9 +17,12 @@ def test_parameter_interpolation():
                     },
                 },
                 "c": {
-                    "description": "c",
-                    "values": {
-                        "2010-01-01": 1,
+                    "d": {
+                        "e": {
+                            "values": {
+                                "2010-01-01": 2,
+                            }
+                        }
                     },
                 },
                 "metadata": {
@@ -36,7 +39,7 @@ def test_parameter_interpolation():
 
     assert (
         "example_field" in propagated.a.b.metadata
-    ), "Metadata not passed down"
+    ), "Metadata not passed down to direct child"
     assert (
-        "example_field" in propagated.a.c.metadata
-    ), "Metadata not passed down"
+        "example_field" in propagated.a.c.d.e.metadata
+    ), "Metadata not passed down to descendent"
