@@ -15,4 +15,5 @@ from openfisca_tools.parameters import (
     interpolate_parameters,
     uprate_parameters,
     homogenize_parameter_structures,
+    propagate_parameter_metadata,
 )
