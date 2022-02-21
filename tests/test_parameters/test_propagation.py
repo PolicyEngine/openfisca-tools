@@ -22,7 +22,11 @@ def test_parameter_interpolation():
                             "values": {
                                 "2010-01-01": 2,
                             }
-                        }
+                        },
+                        "metadata": {
+                            "some_existing_key": 1,
+                            "example_field": "value_to_be_overwritten",
+                        },
                     },
                 },
                 "metadata": {
@@ -40,6 +44,15 @@ def test_parameter_interpolation():
     assert (
         "example_field" in propagated.a.b.metadata
     ), "Metadata not passed down to direct child"
+
     assert (
         "example_field" in propagated.a.c.d.e.metadata
     ), "Metadata not passed down to descendent"
+
+    assert (
+        "some_existing_key" in propagated.a.c.d.metadata
+    ), "Existing descendent metadata not preserved"
+
+    assert (
+        propagated.a.c.d.metadata["example_field"] != "value_to_be_overwritten"
+    ), "Existing descendent metadata field not overwritten"
