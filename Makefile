@@ -5,6 +5,6 @@ format:
 test:
 	pytest tests -vv
 install:
-	pip install -e .
+	pip install -e .[test]
 build:
 	python setup.py sdist bdist_wheel

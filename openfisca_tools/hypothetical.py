@@ -10,6 +10,7 @@ from openfisca_core.taxbenefitsystems.tax_benefit_system import (
 )
 from openfisca_core.periods import period
 from functools import partial
+from openfisca_tools.reforms import set_parameter
 
 
 class IndividualSim:
@@ -28,6 +29,7 @@ class IndividualSim:
         self.reform = reform
         self.system = self.tax_benefit_system()
         self.sim_builder = SimulationBuilder()
+        self.parametric_vary = False
         self.entities = {var.key: var for var in self.system.entities}
         self.apply_reform((self.pre_reform, self.reform, self.post_reform))
         self.situation_data = {
@@ -145,6 +147,7 @@ class IndividualSim:
         period: int = None,
         target: str = None,
         index: int = None,
+        reform: ReformType = None,
     ) -> np.array:
         """Calculates the value of a variable, executing any required formulas.
 
@@ -153,12 +156,25 @@ class IndividualSim:
             period (int, optional): The time period to calculate for. Defaults to None.
             target (str, optional): The target entity if not all entities are required. Defaults to None.
             index (int, optional): The numerical index of the target entity. Defaults to None.
+            reform (reform, optional): The reform to apply. Defaults to None.
 
         Returns:
             np.array: The resulting values.
         """
         if not hasattr(self, "simulation"):
             self.build()
+
+        if self.parametric_vary and reform is None:
+            results = [
+                self.calc(var, period, target, index, reform)
+                for reform in self.parametric_reforms
+            ]
+            return np.array(results)
+
+        if reform is not None:
+            self.apply_reform(reform)
+            self.build()
+
         period = period or self.year
         entity = self.system.variables[var].entity
         if target is not None:
@@ -233,7 +249,8 @@ class IndividualSim:
 
     def vary(
         self,
-        var: str,
+        var: str = None,
+        parameter: str = None,
         min: float = 0,
         max: float = 200000,
         step: float = 100,
@@ -243,27 +260,38 @@ class IndividualSim:
         """Adds an axis to the situation, varying one variable.
 
         Args:
-            var (str): The variable to change.
+            var (str, optional): The variable to change.
+            parameter (str, optional): The parameter to vary. Defaults to None.
             min (float, optional): The minimum value. Defaults to 0.
             max (float, optional): The maximum value. Defaults to 200000.
             step (float, optional): The step size. Defaults to 100.
             index (int, optional): The specific entity index to target. Defaults to 0.
             period (int, optional): The time period. Defaults to None.
         """
-        period = period or self.year
-        if "axes" not in self.situation_data:
-            self.situation_data["axes"] = [[]]
         count = int((max - min) / step) + 1
-        self.situation_data["axes"][0] += [
-            {
-                "count": count,
-                "name": var,
-                "min": min,
-                "max": max,
-                "period": period,
-                "index": index,
-            }
-        ]
-        self.build()
-        self.varying = True
-        self.num_points = count
+        if var is not None:
+            period = period or self.year
+            if "axes" not in self.situation_data:
+                self.situation_data["axes"] = [[]]
+            self.situation_data["axes"][0] += [
+                {
+                    "count": count,
+                    "name": var,
+                    "min": min,
+                    "max": max,
+                    "period": period,
+                    "index": index,
+                }
+            ]
+            self.build()
+            self.varying = True
+
+            self.num_points = count
+        if parameter is not None:
+            # Parametric vary
+            self.parametric_vary = True
+            parameter_values = np.linspace(min, max, count)
+            self.parametric_reforms = [
+                set_parameter(parameter, value, period or "year:2022:10")
+                for value in parameter_values
+            ]
