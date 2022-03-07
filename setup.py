@@ -13,7 +13,7 @@ setup(
         "pandas",
         "wheel",
     ],
-    extra_requires={
+    extras_require={
         "test": [
             "OpenFisca-US>=0.35.0",
             "OpenFisca-UK>=0.12.0",

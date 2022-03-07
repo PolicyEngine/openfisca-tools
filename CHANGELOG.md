@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `IndividualSim.vary` now accepts parameters as well as variables.
 
+### Fixed
+
+* Aggregator functions don't inappropriately re-cast irrelevant exceptions.
+
 ## [0.5.0] - 2022-02-21
 
 ### Added
