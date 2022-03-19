@@ -1,6 +1,6 @@
 from openfisca_core.parameters import ParameterNode, Parameter
 from openfisca_core.parameters.parameter_at_instant import ParameterAtInstant
-from openfisca_core.periods import instant
+from openfisca_core.periods import instant, period
 from numpy import ceil, floor
 from openfisca_tools.reforms import get_parameter
 
@@ -18,12 +18,47 @@ def uprate_parameters(root: ParameterNode) -> ParameterNode:
     for parameter in root.get_descendants():
         if isinstance(parameter, Parameter):
             if "uprating" in parameter.metadata:
-                uprating_parameter = get_parameter(
-                    root, parameter.metadata["uprating"]["parameter"]
-                )
+                meta = parameter.metadata["uprating"]
+                if meta == "self":
+                    meta = dict(parameter="self")
+                elif isinstance(meta, str):
+                    meta = dict(parameter=meta)
+                if meta["parameter"] == "self":
+                    last_instant = instant(
+                        parameter.values_list[0].instant_str
+                    )
+                    start_instant = instant(
+                        meta.get(
+                            "from",
+                            last_instant.offset(
+                                -1, meta.get("interval", "year")
+                            ),
+                        )
+                    )
+                    start = parameter(start_instant)
+                    end_instant = instant(meta.get("to", last_instant))
+                    end = parameter(end_instant)
+                    increase = (end / start)
+                    if "from" in meta:
+                        # This won't work for non-year periods, which are more complicated
+                        increase / (end_instant.year - start_instant.year)
+                    data = {}
+                    value = parameter.values_list[0].value
+                    for i in range(meta.get("number", 10)):
+                        data[
+                            str(
+                                last_instant.offset(
+                                    i, meta.get("interval", "year")
+                                )
+                            )
+                        ] = (value * increase)
+                        value *= increase
+                    uprating_parameter = Parameter("self", data=data)
+                else:
+                    uprating_parameter = get_parameter(root, meta["parameter"])
                 # Start from the latest value
-                if "start_instant" in parameter.metadata["uprating"]:
-                    last_instant = instant(parameter.metadata["start_instant"])
+                if "start_instant" in meta:
+                    last_instant = instant(meta["start_instant"])
                 else:
                     last_instant = instant(
                         parameter.values_list[0].instant_str
@@ -37,15 +72,10 @@ def uprate_parameters(root: ParameterNode) -> ParameterNode:
                         value_at_start = parameter(last_instant)
                         uprater_at_start = uprating_parameter(last_instant)
                         uprater_at_entry = uprating_parameter(entry_instant)
-                        uprated_value = (
-                            value_at_start
-                            * uprater_at_entry
-                            / uprater_at_start
-                        )
-                        if "rounding" in parameter.metadata["uprating"]:
-                            rounding_config = parameter.metadata["uprating"][
-                                "rounding"
-                            ]
+                        uprater_change = uprater_at_entry / uprater_at_start
+                        uprated_value = value_at_start * uprater_change
+                        if "rounding" in meta:
+                            rounding_config = meta["rounding"]
                             if isinstance(rounding_config, float):
                                 interval = rounding_config
                                 rounding_fn = round
