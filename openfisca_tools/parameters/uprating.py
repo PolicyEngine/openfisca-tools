@@ -38,7 +38,7 @@ def uprate_parameters(root: ParameterNode) -> ParameterNode:
                     start = parameter(start_instant)
                     end_instant = instant(meta.get("to", last_instant))
                     end = parameter(end_instant)
-                    increase = (end / start)
+                    increase = end / start
                     if "from" in meta:
                         # This won't work for non-year periods, which are more complicated
                         increase / (end_instant.year - start_instant.year)

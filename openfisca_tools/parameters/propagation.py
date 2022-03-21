@@ -18,9 +18,12 @@ def propagate_parameter_metadata(root: ParameterNode) -> ParameterNode:
     for parameter in root.get_descendants():
         if parameter.metadata.get("propagate_metadata_to_children"):
             for descendant in parameter.get_descendants():
-                descendant.metadata.update({
-                    key: value for key, value in parameter.metadata.items()
-                    if key not in UNPROPAGAGED_METADATA
-                })
+                descendant.metadata.update(
+                    {
+                        key: value
+                        for key, value in parameter.metadata.items()
+                        if key not in UNPROPAGAGED_METADATA
+                    }
+                )
 
     return root

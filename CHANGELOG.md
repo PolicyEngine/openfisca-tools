@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Self-uprating: where a parameter is uprated using its trend over a given time period.
 
+### Fixed
+
+* Breakdown metadata is not passed down.
+
 ## [0.6.0] - 2022-03-02
 
 ### Added
