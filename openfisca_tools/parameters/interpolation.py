@@ -30,7 +30,7 @@ def interpolate_parameters(root: ParameterNode) -> ParameterNode:
                     ]
                     while (
                         str(start.offset(num_intervals, interval_size))
-                        not in parameter_dates
+                        < parameter_dates[0]
                     ):
                         num_intervals += 1
                     # Interpolate in each interval

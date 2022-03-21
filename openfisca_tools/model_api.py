@@ -11,6 +11,7 @@ from openfisca_core.model_api import (
     min_,
 )
 from openfisca_core.populations import Population
+from openfisca_core.errors import VariableNotFoundError
 from openfisca_core.entities import Entity
 from typing import Callable, List, Tuple, Type, Union
 import numpy as np
@@ -88,8 +89,8 @@ def for_each_variable(
                 values = group_agg_func(
                     entity.members(variable, period, options=options)
                 )
-            except Exception as e:
-                raise ValueError(
+            except VariableNotFoundError as e:
+                raise VariableNotFoundError(
                     f"Variable {variable} is not defined for {entity.entity.label} or {entity.entity.label} members: {e}"
                 )
         if result is None:
