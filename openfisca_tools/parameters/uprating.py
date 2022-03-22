@@ -1,4 +1,4 @@
-from openfisca_core.parameters import ParameterNode, Parameter
+from openfisca_core.parameters import ParameterNode, Parameter, ParameterScale
 from openfisca_core.parameters.parameter_at_instant import ParameterAtInstant
 from openfisca_core.periods import instant, period
 from numpy import ceil, floor
@@ -15,7 +15,16 @@ def uprate_parameters(root: ParameterNode) -> ParameterNode:
         ParameterNode: The same root, with uprating applied to descendants.
     """
 
-    for parameter in root.get_descendants():
+    descendants = list(root.get_descendants())
+
+    scales = list(filter(lambda p: isinstance(p, ParameterScale), descendants))
+    for scale in scales:
+        for bracket in scale.brackets:
+            for allowed_key in bracket._allowed_keys:
+                if hasattr(bracket, allowed_key):
+                    descendants.append(getattr(bracket, allowed_key))
+
+    for parameter in descendants:
         if isinstance(parameter, Parameter):
             if parameter.metadata.get("uprating", None) is not None:
                 meta = parameter.metadata["uprating"]
