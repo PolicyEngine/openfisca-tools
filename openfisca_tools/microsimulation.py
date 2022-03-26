@@ -70,11 +70,19 @@ class Microsimulation:
         Args:
             reform (ReformType): The reform to apply to the tax-benefit system.
         """
+        apply_functions = []
         if isinstance(reform, tuple):
             for subreform in reform:
                 self.apply_reform(subreform)
         else:
-            self.system = reform(self.system)
+            apply_functions += [reform.apply]
+
+        class reform(Reform):
+            def apply(self):
+                for apply_function in apply_functions:
+                    apply_function(self)
+
+        self.system = reform(self.system)
 
     def load_dataset(self, dataset: type, year: int) -> None:
         """Loads the dataset with the specified year.
