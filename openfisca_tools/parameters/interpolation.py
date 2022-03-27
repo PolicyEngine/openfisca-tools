@@ -14,7 +14,12 @@ def interpolate_parameters(root: ParameterNode) -> ParameterNode:
     """
     for parameter in root.get_descendants():
         if isinstance(parameter, Parameter):
-            if "interpolation" in parameter.metadata:
+            if (
+                "interpolation" in parameter.metadata
+                and not parameter.metadata["interpolation"].get(
+                    "completed", False
+                )
+            ):
                 interpolated_entries = []
                 for i in range(len(parameter.values_list) - 1):
                     # For each gap in parameter values
@@ -59,4 +64,5 @@ def interpolate_parameters(root: ParameterNode) -> ParameterNode:
                 parameter.values_list.sort(
                     key=lambda x: x.instant_str, reverse=True
                 )
+                parameter.metadata["interpolation"]["completed"] = True
     return root

@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.2] - 2022-03-27
 
-### 
+### Fixed
+
+* `add` function raises the correct `Exception` class.
+* Interpolation only happens once.
 
 ## [0.7.1] - 2022-03-22
 
