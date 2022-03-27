@@ -90,7 +90,7 @@ def for_each_variable(
                     entity.members(variable, period, options=options)
                 )
             except VariableNotFoundError as e:
-                raise VariableNotFoundError(
+                raise Exception(
                     f"Variable {variable} is not defined for {entity.entity.label} or {entity.entity.label} members: {e}"
                 )
         if result is None:
