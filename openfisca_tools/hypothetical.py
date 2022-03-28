@@ -58,11 +58,19 @@ class IndividualSim:
         Args:
             reform (ReformType): The reform to apply to the tax-benefit system.
         """
+        if not hasattr(self.system, "modify_parameters"):
+
+            def modify_parameters(self, modifier):
+                self.parameters = modifier(self.parameters)
+
+            self.system.modify_parameters = modify_parameters.__get__(
+                self.system
+            )
         if isinstance(reform, tuple):
             for subreform in reform:
                 self.apply_reform(subreform)
         else:
-            self.system = reform(self.system)
+            reform.apply(self.system)
 
     def add_data(
         self,
