@@ -27,7 +27,7 @@ def get_breakdown_variables(node: ParameterNode) -> List[str]:
             breakdown = [breakdown]
         if not isinstance(breakdown, list):
             # Not a list, skip process and warn.
-            logging.warn(
+            logging.warning(
                 f"Invalid breakdown metadata for parameter {node.name}: {type(breakdown)}"
             )
             return None
@@ -88,7 +88,7 @@ def homogenize_parameter_node(
             except:
                 is_int = False
             if not is_int or str(child) not in node.children:
-                logging.warn(
+                logging.warning(
                     f"Parameter {node.name} has a child {child} that is not in the possible values of {first_breakdown}, ignoring."
                 )
         if further_breakdown:

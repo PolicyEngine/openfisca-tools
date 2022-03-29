@@ -1,7 +1,8 @@
 """
 Microsimulation interfaces and utility functions.
 """
-from typing import List, Tuple
+from re import S
+from typing import Callable, List, Tuple
 from openfisca_core.entities.entity import Entity
 from microdf.generic import MicroDataFrame
 import numpy as np
@@ -70,19 +71,19 @@ class Microsimulation:
         Args:
             reform (ReformType): The reform to apply to the tax-benefit system.
         """
-        apply_functions = []
+        if not hasattr(self.system, "modify_parameters"):
+
+            def modify_parameters(self, modifier):
+                self.parameters = modifier(self.parameters)
+
+            self.system.modify_parameters = modify_parameters.__get__(
+                self.system
+            )
         if isinstance(reform, tuple):
             for subreform in reform:
                 self.apply_reform(subreform)
         else:
-            apply_functions += [reform.apply]
-
-        class reform(Reform):
-            def apply(self):
-                for apply_function in apply_functions:
-                    apply_function(self)
-
-        self.system = reform(self.system)
+            reform.apply(self.system)
 
     def load_dataset(self, dataset: type, year: int) -> None:
         """Loads the dataset with the specified year.

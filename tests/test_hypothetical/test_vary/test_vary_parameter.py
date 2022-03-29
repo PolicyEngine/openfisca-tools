@@ -12,7 +12,7 @@ def test_vary_parameter():
         max=500,
         step=250,
     )
-    results = sim.calc("snap")
+    results = sim.calc("snap_normal_allotment")
     assert results.shape == (
         3,
         1,
@@ -20,3 +20,6 @@ def test_vary_parameter():
     assert (
         results[-1][0] > results[0][0]
     ), "The last value should be greater than the first (as the reform increases benefit generosity)."
+
+
+test_vary_parameter()
