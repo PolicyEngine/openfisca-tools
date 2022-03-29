@@ -180,6 +180,7 @@ class IndividualSim:
             return np.array(results)
 
         if reform is not None:
+            self.system = self.tax_benefit_system()
             self.apply_reform(reform)
             self.build()
 
