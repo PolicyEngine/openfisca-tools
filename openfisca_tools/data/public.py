@@ -9,16 +9,6 @@ class PublicDataset(Dataset):
 
     url_by_year: Dict[int, str] = None
 
-    def __init__(self):
-        super().__init__()
-
-        assert isinstance(
-            self.url_by_year, dict
-        ), "You must provide a dictionary of URLs for each year."
-        assert (
-            len(self.url_by_year) > 0
-        ), "You must provide a URL for at least one year of data."
-
     def download(self, year: int):
         """Downloads the dataset from the given URL for the given year.
 

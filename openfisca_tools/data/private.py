@@ -12,16 +12,6 @@ class PrivateDataset(Dataset):
     bucket_name: str = None
     filename_by_year: Dict[int, str] = None
 
-    def __init__(self):
-        super().__init__()
-
-        assert isinstance(
-            self.filename_by_year, dict
-        ), "You must provide a dictionary of filenames for each year."
-        assert (
-            len(self.filename_by_year) > 0
-        ), "You must provide a filename for at least one year of data."
-
     def _get_storage_bucket(self) -> storage.Bucket:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
