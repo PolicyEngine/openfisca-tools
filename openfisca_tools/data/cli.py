@@ -18,7 +18,7 @@ def openfisca_data_cli(datasets: List[Dataset]):
     args = parser.parse_args()
     if args.dataset == "datasets":
         if args.action == "list":
-            return dataset_summary(datasets)
+            print(dataset_summary(datasets.values()))
     else:
         try:
             target = getattr(datasets[args.dataset], args.action)
