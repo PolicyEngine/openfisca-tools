@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Callable, Union
 import logging
 import os
 from pathlib import Path
@@ -57,6 +57,20 @@ class Dataset:
             Dataset.TABLES,
             Dataset.ARRAYS,
         ], "You tried to instantiate a Dataset object, but your data_format attribute is invalid."
+
+        # Ensure typed arguments are enforced in `generate`
+
+        def cast_first_arg_as_int(fn: Callable) -> Callable:
+            def wrapper(*args, **kwargs):
+                args = list(args)
+                args[0] = int(args[0])
+                return fn(*args, **kwargs)
+
+            return wrapper
+
+        self.generate = cast_first_arg_as_int(self.generate)
+        self.download = cast_first_arg_as_int(self.download)
+        self.upload = cast_first_arg_as_int(self.upload)
 
     def filename(self, year: int) -> str:
         """Returns the filename of the dataset for a given year.
