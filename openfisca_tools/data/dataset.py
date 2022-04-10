@@ -23,8 +23,8 @@ class Dataset:
         # Setup dataset
         try:
             self.folder_path = Path(self.folder_path)
-        except AttributeError:
-            raise AttributeError(
+        except TypeError:
+            raise TypeError(
                 f"You tried to instantiate {self.label}, but no folder_path attribute has been provided (or an invalid path supplied)."
             )
 
