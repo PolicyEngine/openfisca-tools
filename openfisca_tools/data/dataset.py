@@ -9,9 +9,12 @@ import numpy as np
 
 
 class Dataset:
+    """The `Dataset` class is a base class for datasets used directly or indirectly for OpenFisca models. 
+    A dataset defines a generation function to create it from other data, and this class provides common features
+    like cloud storage, metadata and loading."""
     name: str = None
     label: str = None
-    model: str = None
+    is_openfisca_compatible: bool = True
     data_format: str = None
     folder_path: str = None
 
@@ -42,7 +45,7 @@ class Dataset:
         ), "You tried to instantiate a Dataset object, but no label has been provided."
 
         if self.data_format is None:
-            if self.model is None:
+            if not self.is_openfisca_compatible:
                 # Assume that external (raw) datasets are a collection of tables.
                 self.data_format = Dataset.TABLES
             else:
@@ -191,7 +194,7 @@ class Dataset:
     @property
     def years(self):
         pattern = re.compile(f"\n{self.name}_([0-9]+).h5")
-        matches = list(
+        return list(
             map(
                 int,
                 pattern.findall(
@@ -202,4 +205,3 @@ class Dataset:
                 ),
             )
         )
-        return matches
