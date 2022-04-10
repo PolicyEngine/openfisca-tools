@@ -9,9 +9,10 @@ import numpy as np
 
 
 class Dataset:
-    """The `Dataset` class is a base class for datasets used directly or indirectly for OpenFisca models. 
+    """The `Dataset` class is a base class for datasets used directly or indirectly for OpenFisca models.
     A dataset defines a generation function to create it from other data, and this class provides common features
     like cloud storage, metadata and loading."""
+
     name: str = None
     label: str = None
     is_openfisca_compatible: bool = True
