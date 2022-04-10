@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="OpenFisca-Tools",
-    version="0.7.3",
+    version="0.8.0",
     author="PolicyEngine",
     license="http://www.fsf.org/licensing/licenses/agpl-3.0.html",
     url="https://github.com/policyengine/openfisca-tools",
@@ -12,6 +12,7 @@ setup(
         "numpy",
         "pandas",
         "wheel",
+        "h5py",
     ],
     extras_require={
         "test": [
