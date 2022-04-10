@@ -9,7 +9,7 @@ from openfisca_tools.data.dataset import Dataset
 class PrivateDataset(Dataset):
     """Private datasets are stored on Google Cloud Buckets."""
 
-    bucket_name: str = None
+    bucket_name: str = "policyengine-uk-data"
     filename_by_year: Dict[int, str] = None
 
     def _get_storage_bucket(self) -> storage.Bucket:
@@ -38,13 +38,13 @@ class PrivateDataset(Dataset):
                     )
         try:
             return client.get_bucket(self.bucket_name)
-        except:
+        except Exception as e:
             raise Exception(
-                "Your account does not have sufficient permissions."
+                f"Your account does not have sufficient permissions: {e}."
             )
 
     def download(self, year: int):
-        """Downloads the dataset from Google Cloud Storage for the given year.
+        """Downloads the dataset from Google Cloud Storage for the given year. Overwrites any existing dataset for the year specified.
 
         Args:
             year (int): The year of the dataset to download.
