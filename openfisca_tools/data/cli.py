@@ -21,7 +21,11 @@ def openfisca_data_cli(datasets: List[Dataset]):
             return dataset_summary(datasets)
     else:
         try:
-            return getattr(datasets[args.dataset], args.action)(*args.args)
+            target = getattr(datasets[args.dataset], args.action)
+            if callable(target):
+                target(*args.args)
+            else:
+                return target
         except Exception as e:
             print("\n\nEncountered an error:")
             raise e
