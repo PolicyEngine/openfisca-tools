@@ -14,5 +14,11 @@ setup(
         "wheel",
         "h5py",
     ],
+    extras_require={
+        "test": [
+            "OpenFisca-US>=0.35.0",
+            "OpenFisca-UK>=0.12.0",
+        ]
+    },
     packages=find_packages(),
 )
