@@ -11,6 +11,7 @@ from openfisca_core.model_api import *
 from openfisca_core.simulation_builder import SimulationBuilder
 from microdf import MicroSeries
 from openfisca_core.taxbenefitsystems import TaxBenefitSystem
+from openfisca_tools.data.dataset import Dataset
 
 from openfisca_tools.model_api import carried_over, ReformType
 
@@ -115,17 +116,22 @@ class Microsimulation:
         builder = SimulationBuilder()
         builder.create_entities(self.system)
 
+        if not hasattr(dataset, "data_format"):
+            dataset.data_format = Dataset.ARRAYS
+
+        key_suffix = f"/{year}" if dataset.data_format == Dataset.TIME_PERIOD_ARRAYS else ""
+
         for person_entity in self.person_entity_names:
             builder.declare_person_entity(
-                person_entity, np.array(data[f"{person_entity}_id"])
+                person_entity, np.array(data[f"{person_entity}_id{key_suffix}"])
             )
 
         for group_entity in self.group_entity_names:
-            primary_keys = np.array(data[f"{group_entity}_id"])
+            primary_keys = np.array(data[f"{group_entity}_id{key_suffix}"])
             group = builder.declare_entity(group_entity, primary_keys)
-            foreign_keys = np.array(data[f"person_{group_entity}_id"])
-            if f"person_{group_entity}_role" in data.keys():
-                roles = np.array(data[f"person_{group_entity}_role"]).astype(
+            foreign_keys = np.array(data[f"person_{group_entity}_id{key_suffix}"])
+            if f"person_{group_entity}_role{key_suffix}" in data.keys():
+                roles = np.array(data[f"person_{group_entity}_role{key_suffix}"]).astype(
                     str
                 )
             elif "role" in data.keys():
@@ -138,21 +144,30 @@ class Microsimulation:
 
         self.simulation = builder.build(self.system)
         self.simulation.max_spiral_loops = 10
-        self.set_input = self.simulation.set_input
-        skipped = []
-        for variable in data.keys():
-            if variable in self.system.variables:
-                values = np.array(data[variable])
-                target_dtype = self.system.variables[variable].value_type
-                if target_dtype in (Enum, str):
-                    values = values.astype(str)
-                else:
-                    values = values.astype(target_dtype)
+        if dataset.data_format == Dataset.TIME_PERIOD_ARRAYS:
+            for variable in data.keys():
+                for period in data[variable].keys():
+                    try:
+                        self.set_input(variable, period, data[variable][period])
+                    except:
+                        pass
+        else:
+            for variable in data.keys():
                 try:
-                    self.simulation.set_input(variable, year, values)
+                    self.set_input(variable, year, data[variable])
                 except:
-                    skipped += [variable]
+                    pass
         data.close()
+
+    def set_input(self, variable: str, year: int, values: np.ndarray) -> None:
+        if variable in self.system.variables:
+            values = np.array(values)
+            target_dtype = self.system.variables[variable].value_type
+            if target_dtype in (Enum, str):
+                values = values.astype(str)
+            else:
+                values = values.astype(target_dtype)
+            self.simulation.set_input(variable, year, values)
 
     def map_to(
         self, arr: np.array, entity: str, target_entity: str, how: str = None

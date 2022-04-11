@@ -22,6 +22,7 @@ class Dataset:
     # Data formats
     TABLES = "tables"
     ARRAYS = "arrays"
+    TIME_PERIOD_ARRAYS = "time_period_arrays"
 
     def __init__(self):
         # Setup dataset
@@ -56,6 +57,7 @@ class Dataset:
         assert self.data_format in [
             Dataset.TABLES,
             Dataset.ARRAYS,
+            Dataset.TIME_PERIOD_ARRAYS,
         ], "You tried to instantiate a Dataset object, but your data_format attribute is invalid."
 
         # Ensure typed arguments are enforced in `generate`
@@ -109,7 +111,7 @@ class Dataset:
             Union[h5py.File, np.array, pd.DataFrame, pd.HDFStore]: The dataset.
         """
         file = self.folder_path / self.filename(year)
-        if self.data_format == Dataset.ARRAYS:
+        if self.data_format in (Dataset.ARRAYS, Dataset.TIME_PERIOD_ARRAYS):
             if key is None:
                 # If no key provided, return the basic H5 reader.
                 return h5py.File(file, mode=mode)
@@ -132,6 +134,29 @@ class Dataset:
                 f"Invalid data format {self.data_format} for dataset {self.label}."
             )
 
+    def save(self, year: int, key: str, values: Union[np.array, pd.DataFrame]):
+        """Overwrites the values for `key` with `values`.
+
+        Args:
+            year (int): The year of the dataset to save.
+            key (str): The key to save.
+            values (Union[np.array, pd.DataFrame]): The values to save.
+        """
+        file = self.folder_path / self.filename(year)
+        if self.data_format in (Dataset.ARRAYS, Dataset.TIME_PERIOD_ARRAYS):
+            with h5py.File(file, "a") as f:
+                # Overwrite if existing
+                if key in f:
+                    del f[key]
+                f.create_dataset(key, data=values)
+        elif self.data_format == Dataset.TABLES:
+            with pd.HDFStore(file, "a") as f:
+                f.put(key, values)
+        else:
+            raise ValueError(
+                f"Invalid data format {self.data_format} for dataset {self.label}."
+            )
+
     def keys(self, year: int):
         """Returns the keys of the dataset for a given year.
 
@@ -141,7 +166,7 @@ class Dataset:
         Returns:
             list: The keys of the dataset.
         """
-        if self.data_format == Dataset.ARRAYS:
+        if self.data_format in (Dataset.ARRAYS, Dataset.TIME_PERIOD_ARRAYS):
             with h5py.File(self.file(year), mode="r") as f:
                 return list(f.keys())
         elif self.data_format == Dataset.TABLES:
