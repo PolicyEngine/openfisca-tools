@@ -119,21 +119,28 @@ class Microsimulation:
         if not hasattr(dataset, "data_format"):
             dataset.data_format = Dataset.ARRAYS
 
-        key_suffix = f"/{year}" if dataset.data_format == Dataset.TIME_PERIOD_ARRAYS else ""
+        key_suffix = (
+            f"/{year}"
+            if dataset.data_format == Dataset.TIME_PERIOD_ARRAYS
+            else ""
+        )
 
         for person_entity in self.person_entity_names:
             builder.declare_person_entity(
-                person_entity, np.array(data[f"{person_entity}_id{key_suffix}"])
+                person_entity,
+                np.array(data[f"{person_entity}_id{key_suffix}"]),
             )
 
         for group_entity in self.group_entity_names:
             primary_keys = np.array(data[f"{group_entity}_id{key_suffix}"])
             group = builder.declare_entity(group_entity, primary_keys)
-            foreign_keys = np.array(data[f"person_{group_entity}_id{key_suffix}"])
+            foreign_keys = np.array(
+                data[f"person_{group_entity}_id{key_suffix}"]
+            )
             if f"person_{group_entity}_role{key_suffix}" in data.keys():
-                roles = np.array(data[f"person_{group_entity}_role{key_suffix}"]).astype(
-                    str
-                )
+                roles = np.array(
+                    data[f"person_{group_entity}_role{key_suffix}"]
+                ).astype(str)
             elif "role" in data.keys():
                 roles = np.array(data["role"]).astype(str)
             else:
@@ -148,7 +155,9 @@ class Microsimulation:
             for variable in data.keys():
                 for period in data[variable].keys():
                     try:
-                        self.set_input(variable, period, data[variable][period])
+                        self.set_input(
+                            variable, period, data[variable][period]
+                        )
                     except:
                         pass
         else:
