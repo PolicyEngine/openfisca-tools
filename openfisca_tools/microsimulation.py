@@ -1,6 +1,7 @@
 """
 Microsimulation interfaces and utility functions.
 """
+import logging
 from re import S
 from typing import Callable, List, Tuple
 from openfisca_core.entities.entity import Entity
@@ -158,14 +159,14 @@ class Microsimulation:
                         self.set_input(
                             variable, period, data[variable][period]
                         )
-                    except:
-                        pass
+                    except Exception as e:
+                        logging.warn(f"Could not set {variable} for {period}: {e}")
         else:
             for variable in data.keys():
                 try:
                     self.set_input(variable, year, data[variable])
-                except:
-                    pass
+                except Exception as e:
+                    logging.warn(f"Could not set {variable} for {period}: {e}")
         data.close()
 
     def set_input(self, variable: str, year: int, values: np.ndarray) -> None:
