@@ -279,10 +279,12 @@ def uprated(by: str = None, start_year: int = 2015) -> Callable:
             if by is None:
                 return entity(variable.__name__, period.last_year)
             else:
-                uprating = (
-                    parameters(period).uprating[by]
-                    / parameters(period.last_year).uprating[by]
-                )
+                current_parameter = parameters(period)
+                last_year_parameter = parameters(period.last_year)
+                for name in by.split("."):
+                    current_parameter = getattr(current_parameter, name)
+                    last_year_parameter = getattr(last_year_parameter, name)
+                uprating = current_parameter / last_year_parameter
                 old = entity(variable.__name__, period.last_year)
                 if (formula is not None) and (all(old) == 0):
                     # If no values have been inputted, don't uprate and
