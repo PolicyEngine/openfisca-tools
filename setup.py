@@ -13,6 +13,8 @@ setup(
         "pandas",
         "wheel",
         "h5py",
+        "tables",
+        "google-cloud-storage",
     ],
     extras_require={
         "test": [
