@@ -160,7 +160,9 @@ class Microsimulation:
                             variable, period, data[variable][period]
                         )
                     except Exception as e:
-                        logging.warn(f"Could not set {variable} for {period}: {e}")
+                        logging.warn(
+                            f"Could not set {variable} for {period}: {e}"
+                        )
         else:
             for variable in data.keys():
                 try:
