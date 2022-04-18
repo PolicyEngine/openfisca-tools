@@ -1,6 +1,7 @@
 """
 IndividualSim and any other interfaces to intialising and running simulations on hypothetical situations.
 """
+from typing import Dict, List
 from openfisca_core.entities.entity import Entity
 from openfisca_tools.model_api import ReformType
 import numpy as np
@@ -14,9 +15,16 @@ from openfisca_tools.reforms import set_parameter
 
 
 class IndividualSim:
+    """The IndividualSim class creates a simulation of tax-benefit policy
+    on individually-specified entities.
+    """
+
     tax_benefit_system: TaxBenefitSystem
     pre_reform: ReformType = ()
     post_reform: ReformType = ()
+
+    default_roles: Dict[str, str] = None
+    required_entities: List[str] = None
 
     def __init__(self, reform: ReformType = (), year: int = 2021) -> None:
         """Initialises a hypothetical simulation.
@@ -46,6 +54,31 @@ class IndividualSim:
             )
 
     def build(self):
+        if self.required_entities is not None:
+            # Check for missing entities
+            entities = {entity.key: entity for entity in self.system.entities}
+            person_entity = list(
+                filter(lambda x: x.is_person, entities.values())
+            )[0]
+            for entity in self.required_entities:
+                entity_metadata = entities[entity]
+                roles = {role.key: role for role in entities[entity].roles}
+                default_role = roles[self.default_roles[entity]]
+                no_entity_plural = (
+                    entity_metadata.plural not in self.situation_data
+                )
+                if (
+                    no_entity_plural
+                    or len(self.situation_data[entity_metadata.plural]) == 0
+                ):
+                    self.situation_data[entity_metadata.plural] = {entity: {}}
+                    members = []
+                    for person in self.situation_data[person_entity.plural]:
+                        members += [person]
+                    self.situation_data[entity_metadata.plural][entity][
+                        default_role.plural
+                    ] = members
+            # Add missing entities with specified default roles
         self.simulation = self.sim_builder.build_from_entities(
             self.system, self.situation_data
         )
