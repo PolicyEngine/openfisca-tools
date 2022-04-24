@@ -45,6 +45,11 @@ class IndividualSim:
         }
         self.varying = False
         self.num_points = None
+        self.group_entity_names = [
+            entity.key
+            for entity in self.system.entities
+            if not entity.is_person
+        ]
 
         # Add add_entity functions
 
@@ -164,6 +169,51 @@ class IndividualSim:
         ][0]
         return entity_type
 
+    def map_to(
+        self, arr: np.array, entity: str, target_entity: str, how: str = None
+    ):
+        """Maps values from one entity to another.
+
+        Args:
+            arr (np.array): The values in their original position.
+            entity (str): The source entity.
+            target_entity (str): The target entity.
+            how (str, optional): A function to use when mapping. Defaults to None.
+
+        Raises:
+            ValueError: If an invalid (dis)aggregation function is passed.
+
+        Returns:
+            np.array: The mapped values.
+        """
+        entity_pop = self.simulation.populations[entity]
+        target_pop = self.simulation.populations[target_entity]
+        if entity == "person" and target_entity in self.group_entity_names:
+            if how and how not in (
+                "sum",
+                "any",
+                "min",
+                "max",
+                "all",
+                "value_from_first_person",
+            ):
+                raise ValueError("Not a valid function.")
+            return target_pop.__getattribute__(how or "sum")(arr)
+        elif entity in self.group_entity_names and target_entity == "person":
+            if not how:
+                return entity_pop.project(arr)
+            if how == "mean":
+                return entity_pop.project(arr / entity_pop.nb_persons())
+        elif entity == target_entity:
+            return arr
+        else:
+            return self.map_to(
+                self.map_to(arr, entity, "person", how="mean"),
+                "person",
+                target_entity,
+                how="sum",
+            )
+
     def get_group(self, entity: str, name: str) -> str:
         """Gets the name of the containing entity for a named entity and group type.
 
@@ -188,6 +238,7 @@ class IndividualSim:
         period: int = None,
         target: str = None,
         index: int = None,
+        map_to: str = None,
         reform: ReformType = None,
     ) -> np.array:
         """Calculates the value of a variable, executing any required formulas.
@@ -217,6 +268,9 @@ class IndividualSim:
             self.apply_reform(reform)
             self.build()
 
+        if map_to is None and target is not None:
+            map_to = self.get_entity(target).key
+
         period = period or self.year
         entity = self.system.variables[var].entity
         if target is not None:
@@ -230,6 +284,9 @@ class IndividualSim:
                 result = self.sim.calculate_add(var, period)
             except:
                 result = self.simulation.calculate_divide(var, period)
+        if map_to is not None:
+            result = self.map_to(result, entity.key, map_to)
+            entity = self.entities[map_to]
         if self.varying:
             result = result.reshape(
                 (self.num_points, len(self.situation_data[entity.plural]))
