@@ -258,7 +258,7 @@ class IndividualSim:
 
         if self.parametric_vary and reform is None:
             results = [
-                self.calc(var, period, target, index, reform)
+                self.calc(var, period=period, target=target, index=index, map_to=map_to, reform=reform)
                 for reform in self.parametric_reforms
             ]
             return np.array(results)
