@@ -275,15 +275,8 @@ class IndividualSim:
             self.apply_reform(reform)
             self.build()
 
-        if map_to is None and target is not None:
-            map_to = self.get_entity(target).key
-
         period = period or self.year
         entity = self.system.variables[var].entity
-        if target is not None:
-            target_entity = self.get_entity(target)
-            if target_entity.key != entity.key:
-                target = self.get_group(entity, target)
         try:
             result = self.simulation.calculate(var, period)
         except:
@@ -291,6 +284,11 @@ class IndividualSim:
                 result = self.sim.calculate_add(var, period)
             except:
                 result = self.simulation.calculate_divide(var, period)
+        if (
+            target is not None
+            and target not in self.situation_data[entity.plural]
+        ):
+            map_to = self.get_entity(target).key
         if map_to is not None:
             result = self.map_to(result, entity.key, map_to)
             entity = self.entities[map_to]
