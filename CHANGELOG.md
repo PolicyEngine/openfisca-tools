@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Adding a `target` entity to `IndividualSim.calc` now functions correctly when `target` has a different entity type than `variable`.
+* Adds `MANIFEST.in` to the repo.
 
 ## [0.10.1] - 2022-04-24
 
