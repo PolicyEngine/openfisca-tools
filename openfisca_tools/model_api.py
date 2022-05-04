@@ -96,7 +96,7 @@ def for_each_variable(
                 variable_population.project(
                     variable_population(variable, period)
                 )
-                / variable_entity.nb_persons()
+                / variable_population.nb_persons()
             )
             values = group_agg_func(person_shares)
         if result is None:
