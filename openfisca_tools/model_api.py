@@ -84,15 +84,21 @@ def for_each_variable(
         variable_entity = entity.entity.get_variable(variable).entity
         if variable_entity.key == entity.entity.key:
             values = entity(variable, period, options=options)
-        else:
-            try:
-                values = group_agg_func(
-                    entity.members(variable, period, options=options)
+        elif variable_entity.is_person:
+            values = group_agg_func(
+                entity.members(variable, period, options=options)
+            )
+        else:  # Group-to-group aggregation
+            variable_population = entity.simulation.populations[
+                variable_entity.key
+            ]
+            person_shares = (
+                variable_population.project(
+                    variable_population(variable, period)
                 )
-            except VariableNotFoundError as e:
-                raise Exception(
-                    f"Variable {variable} is not defined for {entity.entity.label} or {entity.entity.label} members: {e}"
-                )
+                / variable_population.nb_persons()
+            )
+            values = variable_population.sum(person_shares)
         if result is None:
             result = values
         else:
