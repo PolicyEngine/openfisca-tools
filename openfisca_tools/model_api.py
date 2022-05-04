@@ -98,7 +98,7 @@ def for_each_variable(
                 )
                 / variable_population.nb_persons()
             )
-            values = group_agg_func(person_shares)
+            values = variable_population.sum(person_shares)
         if result is None:
             result = values
         else:
