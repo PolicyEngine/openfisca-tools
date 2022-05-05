@@ -88,17 +88,18 @@ def for_each_variable(
             values = group_agg_func(
                 entity.members(variable, period, options=options)
             )
+        elif entity.entity.is_person:
+            raise ValueError(
+                f"You requested to aggregate {variable} (defined for {variable_entity.plural}) to {entity.entity.plural}, but this is not yet implemented."
+            )
         else:  # Group-to-group aggregation
             variable_population = entity.simulation.populations[
                 variable_entity.key
             ]
-            person_shares = (
-                variable_population.project(
-                    variable_population(variable, period)
-                )
-                / variable_population.nb_persons()
-            )
-            values = variable_population.sum(person_shares)
+            person_shares = variable_population.project(
+                variable_population(variable, period)
+            ) / variable_population.project(variable_population.nb_persons())
+            values = entity.sum(person_shares)
         if result is None:
             result = values
         else:
