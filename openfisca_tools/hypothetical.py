@@ -26,12 +26,12 @@ class IndividualSim:
     default_roles: Dict[str, str] = None
     required_entities: List[str] = None
 
-    def __init__(self, reform: ReformType = (), year: int = 2021) -> None:
+    def __init__(self, reform: ReformType = (), year: int = 2022) -> None:
         """Initialises a hypothetical simulation.
 
         Args:
             reform (ReformType, optional): The reform to apply. Defaults to ().
-            year (int, optional): The default year input. Defaults to 2020.
+            year (int, optional): The default year input. Defaults to 2022.
         """
         self.year = year
         self.reform = reform
