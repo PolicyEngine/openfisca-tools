@@ -1,3 +1,4 @@
+import numpy as np
 from openfisca_core.populations import Population
 from openfisca_core.periods import Period
 from openfisca_core.parameters import ParameterNodeAtInstant
@@ -35,4 +36,9 @@ def piecewise_formula(
         false_population = override_population_with_mask(population, ~condition)
         result_for_true_members = formula_if_true(true_population, period, parameters)
         result_for_false_members = formula_if_false(false_population, period, parameters)
-        
+        result = np.zeros_like(condition)
+        result[condition] = result_for_true_members
+        result[~condition] = result_for_false_members
+        return result
+    
+    return formula
