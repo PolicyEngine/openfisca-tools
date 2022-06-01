@@ -14,7 +14,7 @@ from microdf import MicroSeries
 from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 from openfisca_tools.data.dataset import Dataset
 
-from openfisca_tools.model_api import carried_over, ReformType
+from openfisca_tools.model_api.model_api import carried_over, ReformType
 
 
 class Microsimulation:
