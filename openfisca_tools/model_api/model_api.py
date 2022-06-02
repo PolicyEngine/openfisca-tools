@@ -81,7 +81,12 @@ def for_each_variable(
             add=entity.sum, all=entity.all, max=entity.max, min=entity.min
         )[group_agg_func]
     for variable in variables:
-        variable_entity = entity.entity.get_variable(variable).entity
+        variable_metadata = entity.entity.get_variable(variable)
+        if variable_metadata is None:
+            raise ValueError(
+                f"Could not find the variable {variable}. This is probably because it doesn't exist, or you mispelled the name."
+            )
+        variable_entity = variable_metadata.entity
         if variable_entity.key == entity.entity.key:
             values = entity(variable, period, options=options)
         elif variable_entity.is_person:
