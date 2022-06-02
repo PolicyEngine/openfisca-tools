@@ -3,7 +3,7 @@ IndividualSim and any other interfaces to intialising and running simulations on
 """
 from typing import Dict, List
 from openfisca_core.entities.entity import Entity
-from openfisca_tools.model_api import ReformType
+from openfisca_tools.model_api.model_api import ReformType
 import numpy as np
 from openfisca_core.simulation_builder import SimulationBuilder
 from openfisca_core.taxbenefitsystems.tax_benefit_system import (
@@ -26,12 +26,12 @@ class IndividualSim:
     default_roles: Dict[str, str] = None
     required_entities: List[str] = None
 
-    def __init__(self, reform: ReformType = (), year: int = 2021) -> None:
+    def __init__(self, reform: ReformType = (), year: int = 2022) -> None:
         """Initialises a hypothetical simulation.
 
         Args:
             reform (ReformType, optional): The reform to apply. Defaults to ().
-            year (int, optional): The default year input. Defaults to 2020.
+            year (int, optional): The default year input. Defaults to 2022.
         """
         self.year = year
         self.reform = reform
