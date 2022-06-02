@@ -1,2 +1,2 @@
 from .model_api import *
-from .piecewise_formulas import piecewise_formula
+from .index_ import index_
