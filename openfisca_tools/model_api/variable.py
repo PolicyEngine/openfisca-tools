@@ -75,12 +75,14 @@ class Variable(CoreVariable):
                     eligible = is_eligible(population, period, parameters)
                     population = override_population(population, eligible)
                     values = formula(population, period, parameters)
-                    complete_values = np.ones(
-                        eligible.shape) * self.default_value
+                    complete_values = (
+                        np.ones(eligible.shape) * self.default_value
+                    )
                     complete_values[eligible] = values
                     return complete_values
 
                 return new_formula
 
             self.formulas = self.set_formulas(
-                {"formula": override_formula(formula)})
+                {"formula": override_formula(formula)}
+            )
