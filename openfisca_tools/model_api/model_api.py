@@ -18,32 +18,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from pandas import Period
 from itertools import product
-
-ReformType = Union[Reform, Tuple[Reform]]
-
-allowed_variable_attributes = ("metadata", "quantity_type")
-
-STOCK = "Stock"
-FLOW = "Flow"
-
-
-class Variable(CoreVariable):
-    quantity_type: str = FLOW
-
-    def __init__(self, baseline_variable=None):
-        try:
-            CoreVariable.__init__(self, baseline_variable=baseline_variable)
-        except ValueError as e:
-            if all(
-                [
-                    attribute not in str(e)
-                    for attribute in allowed_variable_attributes
-                ]
-            ):
-                raise e
-
-        self.is_neutralized = False
-
+from .variable import Variable
 
 np.random.seed(0)
 
@@ -81,7 +56,12 @@ def for_each_variable(
             add=entity.sum, all=entity.all, max=entity.max, min=entity.min
         )[group_agg_func]
     for variable in variables:
-        variable_entity = entity.entity.get_variable(variable).entity
+        variable_metadata = entity.entity.get_variable(variable)
+        if variable_metadata is None:
+            raise ValueError(
+                f"Could not find the variable {variable}. This is probably because it doesn't exist, or you mispelled the name."
+            )
+        variable_entity = variable_metadata.entity
         if variable_entity.key == entity.entity.key:
             values = entity(variable, period, options=options)
         elif variable_entity.is_person:

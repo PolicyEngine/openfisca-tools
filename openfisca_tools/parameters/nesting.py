@@ -61,6 +61,7 @@ def homogenize_parameter_node(
     else:
         # Try to execute the breakdown as Python code
         possible_values = list(eval(first_breakdown))
+    default_value = node.metadata.get("breakdown_default", default_value)
     if not hasattr(node, "children"):
         node = ParameterNode(
             node.name,

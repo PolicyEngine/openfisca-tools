@@ -3,7 +3,7 @@ IndividualSim and any other interfaces to intialising and running simulations on
 """
 from typing import Dict, List
 from openfisca_core.entities.entity import Entity
-from openfisca_tools.model_api.model_api import ReformType
+from openfisca_tools.model_api import ReformType
 import numpy as np
 from openfisca_core.simulation_builder import SimulationBuilder
 from openfisca_core.taxbenefitsystems.tax_benefit_system import (
