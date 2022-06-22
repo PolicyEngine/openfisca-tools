@@ -229,9 +229,9 @@ def amount_between(
 
 
 def random(entity, reset=True):
-    x = np.random.rand(entity.count)
     if reset:
         np.random.seed(0)
+    x = np.random.rand(entity.count)
     return x
 
 

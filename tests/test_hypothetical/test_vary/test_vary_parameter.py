@@ -7,7 +7,7 @@ def test_vary_parameter():
     sim.add_person(name="person", age=30)
     sim.add_spm_unit(name="spm_unit", members=["person"])
     sim.vary(
-        parameter="usda.snap.max_allotment.main.CONTIGUOUS_US.1",
+        parameter="gov.usda.snap.max_allotment.main.CONTIGUOUS_US.1",
         min=0,
         max=500,
         step=250,
