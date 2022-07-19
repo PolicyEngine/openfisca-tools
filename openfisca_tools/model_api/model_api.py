@@ -49,6 +49,11 @@ class Variable(CoreVariable):
         self.is_neutralized = False
 
         if hasattr(self, "defined_for"):
+            if not isinstance(self.defined_for, str):
+                if hasattr(self.defined_for, "value"):
+                    self.defined_for = self.defined_for.value
+                else:
+                    self.defined_for = str(self.defined_for)
             for formula_key, formula in self.formulas.items():
                 formula = make_partially_executed_formula(
                     formula, self.defined_for
