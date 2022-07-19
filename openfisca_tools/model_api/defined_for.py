@@ -64,6 +64,7 @@ def make_partially_executed_formula(
         subset_entity = PopulationSubset(entity, mask_values)
 
         formula_result = formula(subset_entity, period, parameters)
+        formula_result = np.array(formula_result)
         result = (
             np.ones_like(mask_values, dtype=formula_result.dtype)
             * default_value
