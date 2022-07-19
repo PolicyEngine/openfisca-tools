@@ -70,9 +70,10 @@ def test_defined_for_with_deps():
         defined_for = "in_england"
 
         def formula(person, period, parameters):
-            return 1 - person("tax", period)
+            tax = person("tax", period)
+            return 1 - tax
     
-    system.add_variables(in_england, income)
+    system.add_variables(in_england, income, tax)
 
     simulation = SimulationBuilder().build_from_dict(system, {
         "people": {
