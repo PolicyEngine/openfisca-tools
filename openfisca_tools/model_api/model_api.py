@@ -19,9 +19,13 @@ from numpy.typing import ArrayLike
 from pandas import Period
 from itertools import product
 
+from openfisca_tools.model_api.defined_for import (
+    make_partially_executed_formula,
+)
+
 ReformType = Union[Reform, Tuple[Reform]]
 
-allowed_variable_attributes = ("metadata", "quantity_type")
+allowed_variable_attributes = ("metadata", "quantity_type", "defined_for")
 
 STOCK = "Stock"
 FLOW = "Flow"
@@ -43,6 +47,13 @@ class Variable(CoreVariable):
                 raise e
 
         self.is_neutralized = False
+
+        if hasattr(self, "defined_for"):
+            for formula_key, formula in self.formulas.items():
+                formula = make_partially_executed_formula(
+                    formula, self.defined_for
+                )
+                self.formulas[formula_key] = formula
 
 
 np.random.seed(0)
