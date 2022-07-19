@@ -2,16 +2,43 @@ import numpy as np
 from openfisca_core.entities import Entity
 from openfisca_core.populations import Population, GroupPopulation
 from openfisca_core.variables import Variable
+from openfisca_core.projectors import EntityToPersonProjector, Projector
 from numpy.typing import ArrayLike
 from typing import Any, Callable
+
+
+class CallableSubset:
+    def __init__(self, callable: Callable, mask: ArrayLike):
+        self.callable = callable
+        self.mask = mask
+
+    def __call__(self, *args, **kwargs):
+        return self.callable(*args, **kwargs)[self.mask]
+
 
 class PopulationSubset:
     def __init__(self, population: Population, mask: ArrayLike):
         self.population = population
         self.mask = mask
 
-    def __call__(self, variable, period):
-        return self.population(variable, period)[self.mask]
+    def __call__(self, *args, **kwargs):
+        return self.population(*args, **kwargs)[self.mask]
+
+    def __getattribute__(self, attribute):
+        if attribute in ("population", "mask"):
+            return object.__getattribute__(self, attribute)
+        original_result = self.population.__getattribute__(attribute)
+        if isinstance(original_result, EntityToPersonProjector):
+            # e.g. person.household
+            return PopulationSubset(original_result, self.mask)
+        elif attribute in (
+            "sum",
+            "min",
+            "max",
+            "nb_persons",
+        ):
+            return CallableSubset(original_result, self.mask)
+        return original_result
 
 
 def make_partially_executed_formula(
@@ -24,18 +51,27 @@ def make_partially_executed_formula(
 
     def partially_executed_formula(entity, period, parameters):
         if isinstance(mask, str):
-            mask_values = entity(mask, period)
+            mask_entity = entity.simulation.tax_benefit_system.variables[
+                mask
+            ].entity.key
+            if entity.entity.key != mask_entity:
+                mask_values = getattr(entity, mask_entity)(mask, period)
+            else:
+                mask_values = entity(mask, period)
         else:
             mask_values = mask
 
-        entity = PopulationSubset(entity, mask_values)
+        subset_entity = PopulationSubset(entity, mask_values)
 
-        formula_result = formula(entity, period, parameters)
-        result = np.ones_like(mask_values, dtype=formula_result.dtype) * default_value
+        formula_result = formula(subset_entity, period, parameters)
+        result = (
+            np.ones_like(mask_values, dtype=formula_result.dtype)
+            * default_value
+        )
         result[mask_values] = formula_result
 
-        entity = entity.population
+        entity = subset_entity.population
 
         return result
-    
+
     return partially_executed_formula
