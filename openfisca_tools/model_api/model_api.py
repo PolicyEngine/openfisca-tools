@@ -56,7 +56,7 @@ class Variable(CoreVariable):
                     self.defined_for = str(self.defined_for)
             for formula_key, formula in self.formulas.items():
                 formula = make_partially_executed_formula(
-                    formula, self.defined_for
+                    formula, self.defined_for, value_type=self.value_type
                 )
                 self.formulas[formula_key] = formula
 

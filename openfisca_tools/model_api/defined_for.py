@@ -27,7 +27,7 @@ class PopulationSubset:
     def __getattribute__(self, attribute):
         if attribute in ("population", "mask"):
             return object.__getattribute__(self, attribute)
-        original_result = self.population.__getattribute__(attribute)
+        original_result = getattr(self.population, attribute)
         if isinstance(original_result, EntityToPersonProjector):
             # e.g. person.household
             return PopulationSubset(original_result, self.mask)
@@ -42,7 +42,10 @@ class PopulationSubset:
 
 
 def make_partially_executed_formula(
-    formula: Callable, mask: ArrayLike, default_value: Any = 0
+    formula: Callable,
+    mask: ArrayLike,
+    default_value: Any = 0,
+    value_type: type = float,
 ) -> Callable:
     # Edge cases that need to be covered:
     # * entity(variable, period)
@@ -61,14 +64,16 @@ def make_partially_executed_formula(
         else:
             mask_values = mask
 
+        result = np.ones_like(mask_values, dtype=value_type) * default_value
+
+        if not mask_values.any():
+            return result
+
         subset_entity = PopulationSubset(entity, mask_values)
 
         formula_result = formula(subset_entity, period, parameters)
         formula_result = np.array(formula_result)
-        result = (
-            np.ones_like(mask_values, dtype=formula_result.dtype)
-            * default_value
-        )
+
         result[mask_values] = formula_result
 
         entity = subset_entity.population
