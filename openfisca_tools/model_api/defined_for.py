@@ -36,6 +36,9 @@ class PopulationSubset:
             "min",
             "max",
             "nb_persons",
+            "any",
+            "all",
+            "value_from_first_person",
         ):
             return CallableSubset(original_result, self.mask)
         return original_result
