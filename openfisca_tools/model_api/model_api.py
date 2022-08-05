@@ -60,6 +60,9 @@ class Variable(CoreVariable):
                 )
                 self.formulas[formula_key] = formula
 
+    def set_reference(self, reference):
+        return reference
+
 
 np.random.seed(0)
 
