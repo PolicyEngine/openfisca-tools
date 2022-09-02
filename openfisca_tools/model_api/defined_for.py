@@ -15,15 +15,21 @@ class CallableSubset:
         self.callable = callable
         self.mask = mask
 
-    def __call__(self, array: ArrayLike, *args, **kwargs):
+    def __call__(self, array: ArrayLike = None, *args, **kwargs):
+        if array is None:
+            return self.callable(*args, **kwargs)[self.mask]
         # Here, we're in e.g. household.sum(...).
         # The OpenFisca Population objects can map from e.g. people to households,
         # but they use primary/foreign key maps for the entire population. So,
         # for a subset of the population, we need to go back to the full population
         # (filling in with zeroes), use OpenFisca's mapping, then re-filter.
-        decompressed_size = self.population.count
+        decompressed_size = self.population.members.count
+        if len(self.mask) != decompressed_size:
+            mask = self.population.project(self.mask)
+        else:
+            mask = self.mask
         decompressed_array = np.zeros((decompressed_size,))
-        decompressed_array[self.mask] = array
+        decompressed_array[mask] = array
         return self.callable(decompressed_array, *args, **kwargs)[self.mask]
 
 
