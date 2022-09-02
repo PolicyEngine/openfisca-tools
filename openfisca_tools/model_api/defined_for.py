@@ -23,6 +23,8 @@ class CallableSubset:
         # but they use primary/foreign key maps for the entire population. So,
         # for a subset of the population, we need to go back to the full population
         # (filling in with zeroes), use OpenFisca's mapping, then re-filter.
+        if len(array) == self.population.members.count:
+            return self.callable(array, *args, **kwargs)[self.mask]
         decompressed_size = self.population.members.count
         if len(self.mask) != decompressed_size:
             mask = self.population.project(self.mask)
