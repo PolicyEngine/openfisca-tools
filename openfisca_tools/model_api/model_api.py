@@ -18,7 +18,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from pandas import Period
 from itertools import product
-
+from .use_current_parameters import use_current_parameters
 from openfisca_tools.model_api.defined_for import (
     make_partially_executed_formula,
 )
@@ -300,6 +300,10 @@ def uprated(by: str = None, start_year: int = 2015) -> Callable:
             return variable
 
         formula = variable.formula if hasattr(variable, "formula") else None
+
+        variable.metadata = {
+            "uprating": by,
+        }
 
         def formula_start_year(entity, period, parameters):
             if by is None:

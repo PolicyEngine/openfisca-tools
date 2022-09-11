@@ -26,7 +26,12 @@ class IndividualSim:
     default_roles: Dict[str, str] = None
     required_entities: List[str] = None
 
-    def __init__(self, reform: ReformType = (), year: int = 2022) -> None:
+    def __init__(
+        self,
+        reform: ReformType = (),
+        year: int = 2022,
+        tax_benefit_system: TaxBenefitSystem = None,
+    ) -> None:
         """Initialises a hypothetical simulation.
 
         Args:
@@ -35,7 +40,7 @@ class IndividualSim:
         """
         self.year = year
         self.reform = reform
-        self.system = self.tax_benefit_system()
+        self.system = tax_benefit_system or self.tax_benefit_system()
         self.sim_builder = SimulationBuilder()
         self.parametric_vary = False
         self.entities = {var.key: var for var in self.system.entities}
