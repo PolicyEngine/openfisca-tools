@@ -1,6 +1,7 @@
 """
 Utility functions for writing reforms.
 """
+
 from pathlib import Path
 from typing import Type
 from openfisca_core.parameters.helpers import load_parameter_file

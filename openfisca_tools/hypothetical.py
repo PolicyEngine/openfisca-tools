@@ -1,6 +1,7 @@
 """
 IndividualSim and any other interfaces to intialising and running simulations on hypothetical situations.
 """
+
 from typing import Dict, List
 from openfisca_core.entities.entity import Entity
 from openfisca_tools.model_api.model_api import ReformType

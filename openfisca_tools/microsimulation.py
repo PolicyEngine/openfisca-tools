@@ -1,6 +1,7 @@
 """
 Microsimulation interfaces and utility functions.
 """
+
 import logging
 from re import S
 from typing import Callable, List, Tuple
