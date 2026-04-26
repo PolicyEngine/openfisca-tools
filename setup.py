@@ -7,7 +7,7 @@ setup(
     license="http://www.fsf.org/licensing/licenses/agpl-3.0.html",
     url="https://github.com/policyengine/openfisca-tools",
     install_requires=[
-        "OpenFisca-Core<44",
+        "OpenFisca-Core>=43,<44",
         "microdf_python",
         "numpy",
         "pandas",
