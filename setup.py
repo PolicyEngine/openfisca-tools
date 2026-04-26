@@ -9,6 +9,7 @@ setup(
     install_requires=[
         "OpenFisca-Core>=38,<39",
         "microdf_python",
+        "matplotlib<4",
         "numpy<1.21",
         "pandas",
         "wheel",
