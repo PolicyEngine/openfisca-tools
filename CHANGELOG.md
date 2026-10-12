@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.10] - 2026-10-13
+
+### Fixed
+
+* Build release distributions on Python 3.12 so their filenames use the normalized project name that PyPI requires (0.13.9 was rejected).
+
 ## [0.13.9] - 2026-10-12
 
 ### Changed
